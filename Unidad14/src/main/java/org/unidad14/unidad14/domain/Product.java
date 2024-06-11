@@ -8,13 +8,16 @@ public class Product {
     private String nombre;
     private double precio;
 
+    private static int idCounter = 1;
+
     public Product() {
     }
 
-    public Product(int id, String nombre, double precio) {
-        this.id = id;
+    public Product(String nombre, double precio) {
+        this.id = Product.idCounter;
         this.nombre = nombre;
         this.precio = precio;
+        idCounter++;
     }
 
     public int getId() {

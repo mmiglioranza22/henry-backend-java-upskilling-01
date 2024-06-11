@@ -1,8 +1,10 @@
 package org.unidad14.unidad14.service;
 
+import java.util.List;
+
 public interface IProductService<T> {
 
-    public T getAllProducts();
+    public List<T> getAllProducts();
 
-    public T insertProduct(T product);
+    public String insertProduct(T product);
 }
