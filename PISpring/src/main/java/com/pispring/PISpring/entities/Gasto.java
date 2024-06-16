@@ -7,6 +7,7 @@ import java.util.Date;
 public class Gasto extends Operacion {
     private int categoriaId;
     private int id;
+    private boolean saldado;
 
     public Gasto() {
     }
@@ -25,6 +26,14 @@ public class Gasto extends Operacion {
 
     public void setCategoriaId(int categoriaId) {
         this.categoriaId = categoriaId;
+    }
+
+    public boolean isSaldado() {
+        return saldado;
+    }
+
+    public void setSaldado(boolean saldado) {
+        this.saldado = saldado;
     }
 
     @Override
@@ -46,4 +55,5 @@ public class Gasto extends Operacion {
     public int compareTo(Operacion o) {
         return 0;
     }
+
 }

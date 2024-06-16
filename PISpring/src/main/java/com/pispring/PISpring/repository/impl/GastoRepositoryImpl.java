@@ -1,23 +1,25 @@
-package com.pispring.PISpring.dao.impl;
+package com.pispring.PISpring.repository.impl;
 
 //Controllers *use* services
 //Services handle business logic (what to do and how), and *use* DAOs for persistance link.
 //DAOs *contracts* with persistent logic (DB), they manage their specific implementation.
 
-import com.pispring.PISpring.dao.GastoDAO;
+import com.pispring.PISpring.entities.Gasto;
+import com.pispring.PISpring.repository.GastoRepository;
 import com.pispring.PISpring.dto.GastoDTO;
 import com.pispring.PISpring.exceptions.DAOException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
+//categoria_id = (SELECT id FROM categorias WHERE categoria = ?)
 @Repository
-public class GastoDAOImpl implements GastoDAO {
+public class GastoRepositoryImpl implements GastoRepository {
     //    private final String SELECT_ALL = "SELECT * FROM gastos";
 //    private final String SELECT_ONE = "SELECT * FROM gastos JOIN categorias ON WHERE id = ?";
     private final String SELECT_ALL_JOIN = "SELECT gastos.*, categorias.categoria \"categoria\" FROM gastos JOIN categorias ON gastos.categoria_id = categorias.id";
@@ -30,8 +32,19 @@ public class GastoDAOImpl implements GastoDAO {
 
     private JdbcTemplate jdbcTemplate;
 
-    public GastoDAOImpl(JdbcTemplate jdbcTemplate) {
+    public GastoRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    private Gasto mapDTOtoModel(GastoDTO resultado) {
+        Gasto gasto = new Gasto();
+        gasto.setId(resultado.getId());
+        gasto.setMonto(resultado.getMonto());
+        gasto.setFecha(resultado.getFecha());
+        gasto.setCategoriaId(resultado.getCategoriaId());
+        gasto.setEsRecurrente(resultado.isEsRecurrente());
+        gasto.setCategoria(resultado.getCategoria());
+        return gasto;
     }
 
     static class GastoDTOMapper implements RowMapper<GastoDTO> {
@@ -78,17 +91,18 @@ public class GastoDAOImpl implements GastoDAO {
     }
 
     @Override
-    public GastoDTO insertar(GastoDTO dto) throws DAOException {
+    public GastoDTO insertar(GastoDTO input) throws DAOException {
         GastoDTO nuevoGasto = null;
         try {
+            Gasto model = this.mapDTOtoModel(input);
             int filaCreada = jdbcTemplate.update(INSERT_ONE,
-                    dto.getMonto(),
-                    dto.getFecha(),
-                    dto.isSaldado(),
-                    dto.getCategoriaId());
-//            El id no es
+                    model.getMonto(),
+                    model.getFecha(),
+                    model.isSaldado(),
+                    model.getCategoriaId());
             if (filaCreada > 0) {
-                nuevoGasto = dto;
+                // Se devuelve el mismo dto, visto que la query update no devuelve el mismo objeto creado
+                nuevoGasto = input;
             } else {
                 System.out.println("ERROR AL CREAR CATEGORIA DEL GASTO");
             }
@@ -100,16 +114,16 @@ public class GastoDAOImpl implements GastoDAO {
     }
 
     //    Hay una forma de hacer la modificación específica / atómica? Leer la key
-    //    el DTO tiene que tener el id y el campo a modificar -> https://stackoverflow.com/questions/52406467/convert-object-to-map-in-java
+    //    https://stackoverflow.com/questions/52406467/convert-object-to-map-in-java
     //    https://www.baeldung.com/spring-events
     @Override
-    public GastoDTO modificar(GastoDTO dto) throws DAOException {
+    public GastoDTO modificar(Integer id, GastoDTO input) throws DAOException {
         GastoDTO resultado = null;
-        System.out.println(dto.getMonto());
         try {
-            int filaModificada = jdbcTemplate.update(UPDATE_ONE, dto.getMonto(), dto.getId());
+            Gasto model = this.mapDTOtoModel(input);
+            int filaModificada = jdbcTemplate.update(UPDATE_ONE, model.getMonto(), id);
             if (filaModificada > 0) {
-                Object[] params = {dto.getId()};
+                Object[] params = {id};
                 int[] types = {1};
                 resultado = jdbcTemplate.queryForObject(
                         SELECT_ONE_JOIN,
@@ -129,7 +143,7 @@ public class GastoDAOImpl implements GastoDAO {
         try {
             int filaBorada = jdbcTemplate.update(DELETE_ONE, id);
             if (filaBorada > 0) {
-                respuesta = "Gasto con id: " + id.toString() + "borrada con éxito";
+                respuesta = "Gasto con id: " + id.toString() + " borrada con éxito";
             }
         } catch (EmptyResultDataAccessException e) {
             e.printStackTrace();

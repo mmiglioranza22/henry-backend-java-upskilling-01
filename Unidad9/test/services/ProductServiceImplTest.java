@@ -22,7 +22,7 @@ class ProductServiceImplTest {
     @Mock
     private ShoppingCart cart;
 
-    //    Injecta el constructor de la clase a ser testeada: la implementación de ProcuctService
+    //    Injecta el constructor de la clase a ser testeada: la implementación de ProductService
     @InjectMocks
     private ProductServiceImpl service;
 
@@ -36,7 +36,7 @@ class ProductServiceImplTest {
 
 //    }
 
-    @DisplayName("Agrega un proudcto N veces")
+    @DisplayName("Agrega un producto N veces")
     @Test
     public void testAgregarProductoAlCarrito() {
 //        GIVEN

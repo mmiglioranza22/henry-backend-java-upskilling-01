@@ -7,7 +7,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-
 @SpringBootApplication
 public class ExpenseTracker implements CommandLineRunner {
     @Autowired
@@ -21,6 +20,8 @@ public class ExpenseTracker implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        System.out.println("Inicializando... Conectado a la base de datos!");
+        System.out.println("Inicializando... Base de datos creada y conectada!");
+        System.out.println("Servidor escuchando en localhost:8080/api/v1");
+        ;
     }
 }

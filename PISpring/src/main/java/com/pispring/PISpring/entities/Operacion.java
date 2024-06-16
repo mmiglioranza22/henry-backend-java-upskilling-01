@@ -52,4 +52,13 @@ public abstract class Operacion implements ObtenerInformacion, Comparable<Operac
         this.esRecurrente = esRecurrente;
     }
 
+    @Override
+    public String toString() {
+        return "Operacion{" +
+                "categoria='" + categoria + '\'' +
+                ", monto=" + monto +
+                ", fecha=" + fecha +
+                ", esRecurrente=" + esRecurrente +
+                '}';
+    }
 }
